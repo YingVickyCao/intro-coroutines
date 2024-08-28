@@ -5,6 +5,7 @@ import contributors.Variant.*
 import kotlinx.coroutines.*
 import tasks.*
 import java.awt.event.ActionListener
+import java.util.Date
 import javax.swing.SwingUtilities
 import kotlin.coroutines.CoroutineContext
 import kotlin.system.exitProcess
@@ -20,7 +21,7 @@ enum class Variant {
     CHANNELS          // Request7Channels
 }
 
-interface Contributors: CoroutineScope {
+interface Contributors : CoroutineScope {
 
     val job: Job
 
@@ -55,16 +56,23 @@ interface Contributors: CoroutineScope {
         val startTime = System.currentTimeMillis()
         when (getSelectedVariant()) {
             BLOCKING -> { // Blocking UI thread
+                println("[BLOCKING 1] thread name:" + Thread.currentThread().name + ",thread id=" + Thread.currentThread().id + "," + Date().toString())
                 val users = loadContributorsBlocking(service, req)
                 updateResults(users, startTime)
+                println("[BLOCKING 2] thread name:" + Thread.currentThread().name + ",thread id=" + Thread.currentThread().id + "," + Date().toString())
             }
+
             BACKGROUND -> { // Blocking a background thread
+                println("[BACKGROUND 1] thread name:" + Thread.currentThread().name + ",thread id=" + Thread.currentThread().id + "," + Date().toString())
                 loadContributorsBackground(service, req) { users ->
                     SwingUtilities.invokeLater {
+                        println("[BACKGROUND 2] thread name:" + Thread.currentThread().name + ",thread id=" + Thread.currentThread().id + "," + Date().toString())
                         updateResults(users, startTime)
                     }
                 }
+                println("[BACKGROUND 3] thread name:" + Thread.currentThread().name + ",thread id=" + Thread.currentThread().id + "," + Date().toString())
             }
+
             CALLBACKS -> { // Using callbacks
                 loadContributorsCallbacks(service, req) { users ->
                     SwingUtilities.invokeLater {
@@ -72,24 +80,28 @@ interface Contributors: CoroutineScope {
                     }
                 }
             }
+
             SUSPEND -> { // Using coroutines
                 launch {
                     val users = loadContributorsSuspend(service, req)
                     updateResults(users, startTime)
                 }.setUpCancellation()
             }
+
             CONCURRENT -> { // Performing requests concurrently
                 launch {
                     val users = loadContributorsConcurrent(service, req)
                     updateResults(users, startTime)
                 }.setUpCancellation()
             }
+
             NOT_CANCELLABLE -> { // Performing requests in a non-cancellable way
                 launch {
                     val users = loadContributorsNotCancellable(service, req)
                     updateResults(users, startTime)
                 }.setUpCancellation()
             }
+
             PROGRESS -> { // Showing progress
                 launch(Dispatchers.Default) {
                     loadContributorsProgress(service, req) { users, completed ->
@@ -99,6 +111,7 @@ interface Contributors: CoroutineScope {
                     }
                 }.setUpCancellation()
             }
+
             CHANNELS -> {  // Performing requests concurrently and showing progress
                 launch(Dispatchers.Default) {
                     loadContributorsChannels(service, req) { users, completed ->
@@ -178,8 +191,7 @@ interface Contributors: CoroutineScope {
         val params = getParams()
         if (params.username.isEmpty() && params.password.isEmpty()) {
             removeStoredParams()
-        }
-        else {
+        } else {
             saveParams(params)
         }
     }
