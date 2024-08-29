@@ -74,11 +74,13 @@ interface Contributors : CoroutineScope {
             }
 
             CALLBACKS -> { // Using callbacks
+                println("[CALLBACKS 1] thread name:" + Thread.currentThread().name + ",thread id=" + Thread.currentThread().id + "," + Date().toString())
                 loadContributorsCallbacks(service, req) { users ->
                     SwingUtilities.invokeLater {
                         updateResults(users, startTime)
                     }
                 }
+                println("[CALLBACKS 2] thread name:" + Thread.currentThread().name + ",thread id=" + Thread.currentThread().id + "," + Date().toString())
             }
 
             SUSPEND -> { // Using coroutines
@@ -137,6 +139,7 @@ interface Contributors : CoroutineScope {
         startTime: Long,
         completed: Boolean = true
     ) {
+        println("[updateResults] thread name:" + Thread.currentThread().name + ",thread id=" + Thread.currentThread().id + "," + Date().toString())
         updateContributors(users)
         updateLoadingStatus(if (completed) COMPLETED else IN_PROGRESS, startTime)
         if (completed) {
