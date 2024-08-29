@@ -84,17 +84,39 @@ interface Contributors : CoroutineScope {
             }
 
             SUSPEND -> { // Using coroutines
-                launch {
+                println("[SUSPEND 1] thread name:" + Thread.currentThread().name + ",thread id=" + Thread.currentThread().id + "," + Date().toString())
+                launch {  //launch a new suspendable computation (called a coroutine, lauch starts a new coroutine responsible for loading data and showing the results.) :when performing network
+                    // requests, it is suspended and releases the underlying thread. when network request returns the result, the computation is resumed.
+                    println("[SUSPEND 2] thread name:" + Thread.currentThread().name + ",thread id=" + Thread.currentThread().id + "," + Date().toString())
                     val users = loadContributorsSuspend(service, req)
                     updateResults(users, startTime)
+                    println("[SUSPEND 6] thread name:" + Thread.currentThread().name + ",thread id=" + Thread.currentThread().id + "," + Date().toString())
                 }.setUpCancellation()
+                println("[SUSPEND 7] thread name:" + Thread.currentThread().name + ",thread id=" + Thread.currentThread().id + "," + Date().toString())
             }
 
             CONCURRENT -> { // Performing requests concurrently
-                launch {
-                    val users = loadContributorsConcurrent(service, req)
-                    updateResults(users, startTime)
+                println("[CONCURRENT 1] thread name:" + Thread.currentThread().name + ",thread id=" + Thread.currentThread().id + "," + Date().toString())
+                val start = System.currentTimeMillis()
+                launch(Dispatchers.Default) {
+                    println("[CONCURRENT 2] thread name:" + Thread.currentThread().name + ",thread id=" + Thread.currentThread().id + "," + Date().toString())
+//                    val users = loadContributorsConcurrent(service, req)
+//                    val users = loadContributorsNotCallable(service, req)
+                    val users = loadContributorsNotCancellable(service, req)
+                    println("[CONCURRENT 8] thread name:" + Thread.currentThread().name + ",thread id=" + Thread.currentThread().id + "," + Date().toString())
+//                    updateResults(users, startTime)
+//                    launch(Dispatchers.Main) {
+//                        println("[CONCURRENT 9] thread name:" + Thread.currentThread().name + ",thread id=" + Thread.currentThread().id + "," + Date().toString())
+//                        updateResults(users, startTime)
+//                    }
+                    withContext(Dispatchers.Main) {
+                        println("[CONCURRENT 9] thread name:" + Thread.currentThread().name + ",thread id=" + Thread.currentThread().id + "," + Date().toString())
+                        updateResults(users, startTime)
+                    }
+                    val end = System.currentTimeMillis()
+                    System.err.println("duration:" + (end - start))
                 }.setUpCancellation()
+                println("[CONCURRENT 10] thread name:" + Thread.currentThread().name + ",thread id=" + Thread.currentThread().id + "," + Date().toString())
             }
 
             NOT_CANCELLABLE -> { // Performing requests in a non-cancellable way

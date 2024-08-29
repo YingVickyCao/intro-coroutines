@@ -14,18 +14,29 @@ fun logRepos(req: RequestData, response: Response<List<Repo>>) {
     val repos = response.body()
     if (!response.isSuccessful || repos == null) {
         log.error("Failed loading repos for ${req.org} with response: '${response.code()}: ${response.message()}'")
-    }
-    else {
+    } else {
         log.info("${req.org}: loaded ${repos.size} repos")
     }
 }
+
+fun logRepos(req: RequestData, repos: List<Repo>) {
+    log.info("${req.org}: loaded ${repos.size} repos")
+}
+
+fun logRepos(req: RequestData, repo: Repo) {
+    log.info("${req.org}: loaded ${repo}")
+}
+
 
 fun logUsers(repo: Repo, response: Response<List<User>>) {
     val users = response.body()
     if (!response.isSuccessful || users == null) {
         log.error("Failed loading contributors for ${repo.name} with response '${response.code()}: ${response.message()}'")
-    }
-    else {
+    } else {
         log.info("${repo.name}: loaded ${users.size} contributors")
     }
+}
+
+fun logUsers(repo: Repo, users: List<User>) {
+    log.info("${repo.name}: loaded ${users.size} contributors")
 }

@@ -25,6 +25,22 @@ interface GitHubService {
         @Path("owner") owner: String,
         @Path("repo") repo: String
     ): Call<List<User>>
+
+    /**
+     * suspend
+     */
+    // define this suspend function. when uss a suspend function to perform a request, the underlying thread isn't blocked.
+    // getOrgRepos suspend function should be called only from a coroutine or another suspend function.
+    @GET("orgs/{org}/repos?per_page=100")
+    suspend fun getOrgRepos(
+        @Path("org") org: String
+    ): List<Repo> // If result is unsuccessful,an exception is thrown
+
+    @GET("repos/{owner}/{repo}/contributors?per_page=100")
+    suspend fun getRepoContributors(
+        @Path("owner") owner: String,
+        @Path("repo") repo: String
+    ): List<User> // If result is unsuccessful,an exception is thrown
 }
 
 @Serializable
