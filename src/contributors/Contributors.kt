@@ -144,13 +144,18 @@ interface Contributors : CoroutineScope {
             }
 
             CHANNELS -> {  // Performing requests concurrently and showing progress
+                println("[CHANNELS 1] thread(" + Thread.currentThread().name + "," + Thread.currentThread().id + ")," + Date().toString())
                 launch(Dispatchers.Default) {
+                    println("[CHANNELS 2] thread(" + Thread.currentThread().name + "," + Thread.currentThread().id + ")," + Date().toString())
                     loadContributorsChannels(service, req) { users, completed ->
+                        println("[CHANNELS 9] thread(" + Thread.currentThread().name + "," + Thread.currentThread().id + ")," + Date().toString())
                         withContext(Dispatchers.Main) {
+                            println("[CHANNELS 10] thread(" + Thread.currentThread().name + "," + Thread.currentThread().id + ")," + Date().toString())
                             updateResults(users, startTime, completed)
                         }
                     }
                 }.setUpCancellation()
+                println("[CHANNELS 11] thread(" + Thread.currentThread().name + "," + Thread.currentThread().id + ")," + Date().toString())
             }
         }
     }

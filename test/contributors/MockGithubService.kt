@@ -2,7 +2,6 @@ package contributors
 
 import kotlinx.coroutines.delay
 import retrofit2.Call
-import retrofit2.Response
 import retrofit2.mock.Calls
 
 object MockGithubService : GitHubService {
@@ -14,18 +13,26 @@ object MockGithubService : GitHubService {
         return Calls.response(reposMap.getValue(repo).users)
     }
 
-/*
-    // Uncomment the following implementations after adding these methods to GitHubService:
-
-    override suspend fun getOrgRepos(org: String): Response<List<Repo>> {
-        delay(reposDelay)
-        return Response.success(repos)
+    override suspend fun getOrgRepos(org: String): List<Repo> {
+        return repos
     }
 
-    override suspend fun getRepoContributors(owner: String, repo: String): Response<List<User>> {
-        val testRepo = reposMap.getValue(repo)
-        delay(testRepo.delay)
-        return Response.success(testRepo.users)
+    override suspend fun getRepoContributors(owner: String, repo: String): List<User> {
+        return reposMap.getValue(repo).users
     }
-*/
+
+    /*
+        // Uncomment the following implementations after adding these methods to GitHubService:
+
+        override suspend fun getOrgRepos(org: String): Response<List<Repo>> {
+            delay(reposDelay)
+            return Response.success(repos)
+        }
+
+        override suspend fun getRepoContributors(owner: String, repo: String): Response<List<User>> {
+            val testRepo = reposMap.getValue(repo)
+            delay(testRepo.delay)
+            return Response.success(testRepo.users)
+        }
+    */
 }
