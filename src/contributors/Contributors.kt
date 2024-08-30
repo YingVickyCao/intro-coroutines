@@ -120,10 +120,14 @@ interface Contributors : CoroutineScope {
             }
 
             NOT_CANCELLABLE -> { // Performing requests in a non-cancellable way
+                println("[NOT_CANCELLABLE 1] thread name:" + Thread.currentThread().name + ",thread id=" + Thread.currentThread().id + "," + Date().toString())
                 launch {
+                    println("[NOT_CANCELLABLE 2] thread name:" + Thread.currentThread().name + ",thread id=" + Thread.currentThread().id + "," + Date().toString())
                     val users = loadContributorsNotCancellable(service, req)
+                    println("[NOT_CANCELLABLE 8] thread name:" + Thread.currentThread().name + ",thread id=" + Thread.currentThread().id + "," + Date().toString())
                     updateResults(users, startTime)
                 }.setUpCancellation()
+                println("[NOT_CANCELLABLE 9] thread name:" + Thread.currentThread().name + ",thread id=" + Thread.currentThread().id + "," + Date().toString())
             }
 
             PROGRESS -> { // Showing progress
