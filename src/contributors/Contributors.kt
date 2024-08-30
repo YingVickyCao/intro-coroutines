@@ -98,7 +98,7 @@ interface Contributors : CoroutineScope {
             CONCURRENT -> { // Performing requests concurrently
                 println("[CONCURRENT 1] thread name:" + Thread.currentThread().name + ",thread id=" + Thread.currentThread().id + "," + Date().toString())
                 val start = System.currentTimeMillis()
-                launch(Dispatchers.Default) {
+                launch(Dispatchers.Default) { // outer scope
                     println("[CONCURRENT 2] thread name:" + Thread.currentThread().name + ",thread id=" + Thread.currentThread().id + "," + Date().toString())
                     val users = loadContributorsConcurrent(service, req)
                     println("[CONCURRENT 8] thread name:" + Thread.currentThread().name + ",thread id=" + Thread.currentThread().id + "," + Date().toString())
@@ -129,13 +129,18 @@ interface Contributors : CoroutineScope {
             }
 
             PROGRESS -> { // Showing progress
+                println("[PROGRESS 1] thread name:" + Thread.currentThread().name + ",thread id=" + Thread.currentThread().id + "," + Date().toString())
                 launch(Dispatchers.Default) {
+                    println("[PROGRESS 2] thread name:" + Thread.currentThread().name + ",thread id=" + Thread.currentThread().id + "," + Date().toString())
                     loadContributorsProgress(service, req) { users, completed ->
+                        println("[PROGRESS 6] thread name:" + Thread.currentThread().name + ",thread id=" + Thread.currentThread().id + "," + Date().toString())
                         withContext(Dispatchers.Main) {
+                            println("[PROGRESS 7] thread name:" + Thread.currentThread().name + ",thread id=" + Thread.currentThread().id + "," + Date().toString())
                             updateResults(users, startTime, completed)
                         }
                     }
                 }.setUpCancellation()
+                println("[PROGRESS 8] thread name:" + Thread.currentThread().name + ",thread id=" + Thread.currentThread().id + "," + Date().toString())
             }
 
             CHANNELS -> {  // Performing requests concurrently and showing progress
