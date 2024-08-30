@@ -100,9 +100,7 @@ interface Contributors : CoroutineScope {
                 val start = System.currentTimeMillis()
                 launch(Dispatchers.Default) {
                     println("[CONCURRENT 2] thread name:" + Thread.currentThread().name + ",thread id=" + Thread.currentThread().id + "," + Date().toString())
-//                    val users = loadContributorsConcurrent(service, req)
-//                    val users = loadContributorsNotCallable(service, req)
-                    val users = loadContributorsNotCancellable(service, req)
+                    val users = loadContributorsConcurrent(service, req)
                     println("[CONCURRENT 8] thread name:" + Thread.currentThread().name + ",thread id=" + Thread.currentThread().id + "," + Date().toString())
 //                    updateResults(users, startTime)
 //                    launch(Dispatchers.Main) {
